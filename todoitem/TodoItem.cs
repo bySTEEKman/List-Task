@@ -1,7 +1,7 @@
 using System;
 namespace todo_rest_api.Models
 {
-    public class Task
+    public class TodoItem
     {
         public int? Id { get; set; }
         public int ListId { get; set; }

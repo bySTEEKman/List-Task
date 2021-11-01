@@ -4,91 +4,100 @@ using todo_rest_api.Models;
 
 namespace todo_rest_api
 {
-    public class TaskService
+    public class TasksService
     {
-        private List<Task> todoItems = new List<Task> {
-                new TodoItem () { Id = 1, Title = "Implement read"},
-                new TodoItem () { Id = 2, Title = "Implement create"}
-             };
-        private int lastId = 2;
-        public List<Task> GetAll()
+        public List<TodoItem> GetAll(List<TodoList> list)
         {
-            return todoItems;
+            List<TodoItem> allTasks = new List<TodoItem>();
+            foreach(TodoList taskList in list)
+            {
+                foreach(TodoItem item in taskList.TaskList)
+                {
+                    allTasks.Add(item);
+                }
+            }
+            return allTasks;
         }
 
-        public Task CreateItem(Task item, List<Task> todoItems)
+        public List<TodoItem> GetAllTaskByTodoListId(TodoList list)
         {
-            item.Id = ++lastId;
-            todoItems.Add(item);
+            return list.TaskList;
+        }
+
+        public TodoItem CreateTask(TodoItem item, TodoList list, int listId)
+        {
+            item.Id = list.TaskList.Count + 1;
+            item.ListId = listId;
+            list.TaskList.Add(item);
             return item;
         }
-        public Task DeleteItem(int id, List<Task> todoItems)
+        public TodoItem DeleteTask(int id, TodoList list)
         {
-            var todoItem = id <= todoItems.Count ? todoItems[--id] : null;
+            var todoTask = id <= list.TaskList.Count ? list.TaskList[--id] : null;
 
-            if(todoItem != null)
+            if(todoTask != null)
             {
-            todoItems.Remove(todoItem);
-            foreach(Task item in todoItems)
-            {
-                if(item.Id > id)
+                list.TaskList.Remove(todoTask);
+                foreach(TodoItem item in list.TaskList)
                 {
-                    item.Id--;
+                    if(item.Id > id)
+                    {
+                        item.Id--;
+                    }
                 }
             }
-            lastId--;
-            }
 
-            return todoItem;
+            return todoTask;
         }
 
-        public Task GetTodoItemById(int id, List<Task> todoItems)
+        public TodoItem GetTaskById(int id, TodoList list)
         {
-            var todoItem = id <= todoItems.Count ? todoItems[--id] : null;
-            return todoItem;
+            var todoTask = id <= list.TaskList.Count ? list.TaskList[--id] : null;
+            return todoTask;
         }
 
-        public Task PutItem(int id, Task model)
+        public TodoItem PutTask(int id, TodoItem model, TodoList list, int listId)
         {
-            var todoItem = id <= todoItems.Count ? model : null;
+            var todoTask = id <= list.TaskList.Count ? model : null;
             int index = --id;
 
-            if(todoItem != null)
+            if(todoTask != null)
             {
-                todoItem.Id = id;
-                todoItems[index] = todoItem;
+                todoTask.Id = id;
+                todoTask.ListId = listId;
+                list.TaskList[index] = todoTask;
             }
 
-           return todoItem;
+           return todoTask;
         }
 
-        public Task PatchItem(int id, Task model)
+        public TodoItem PatchTask(int id, TodoItem model, TodoList list)
         {
-            var todoItem = id <= todoItems.Count ? model : null;
+            var todoTask = id <= list.TaskList.Count ? model : null;
             int index = --id;
             
-            if(todoItem != null)
+            if(todoTask != null)
             {
-                if(todoItem.Title != null)
+                if(todoTask.Title != null)
                 {
-                    todoItems[index].Title = todoItem.Title;
+                    list.TaskList[index].Title = todoTask.Title;
                 }
-                if(todoItem.Description != null)
+                if(todoTask.Description != null)
                 {
-                    todoItems[index].Description = todoItem.Description;
+                    list.TaskList[index].Description = todoTask.Description;
                 }
-                if(todoItem.DueDate != null)
+                if(todoTask.DueDate != null)
                 {
-                    todoItems[index].DueDate = todoItem.DueDate;
+                    list.TaskList[index].DueDate = todoTask.DueDate;
                 }
-                if(todoItem.Done != null)
+                if(todoTask.Done != null)
                 {
-                    todoItems[index].Done = todoItem.Done;
+                    list.TaskList[index].Done = todoTask.Done;
                 }
-                var patchedItem = todoItems[index];
-                return patchedItem;
+                var patchedTask = list.TaskList[index];
+                return patchedTask;
             }
-            return todoItem;
+            return todoTask;
         }
     }
 }

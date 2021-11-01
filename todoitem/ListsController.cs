@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-//using List-Task.Models;
+using todo_rest_api.Models;
 
 namespace todo_rest_api.Controllers
 {
@@ -17,41 +17,70 @@ namespace todo_rest_api.Controllers
             this.listService = service;
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public ActionResult<IEnumerable<TodoList>> GetTodoLists()
         {
             return listService.GetAll();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<TodoList> GetTodoListlById(int id)
+        public ActionResult<TodoList> GetTodoListById(int id)
         {
-            var todoList = todoItemService.GetTodoListById(id);
+            var todoList = listService.GetListById(id);
 
-            if(todoItem == null)
+            if(todoList == null)
             {
                 return NotFound();
             }
 
-            return todoItem;
+            return todoList;
         }
 
-        [HttpPost("")]
-        public ActionResult<TModel> PostTModel(TModel model)
+        [HttpPost]
+        public ActionResult<TodoList> PostTodoList(TodoList model)
         {
-            return null;
+            TodoList createdList = listService.CreateList(model);
+            
+            return Created($"api/lists/{createdList.Id}", createdList);
         }
 
         [HttpPut("{id}")]
-        public IActionResult PutTModel(int id, TModel model)
+        public IActionResult PutTodoList(int id, TodoList model)
         {
-            return NoContent();
+            var todoList = listService.PutList(id, model);
+
+            if (todoList == null)
+            {
+                return NotFound();
+            }
+
+            return Created($"/lists/{id}", todoList);
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult PatchTask (int id, TodoList model)
+        {
+            var todoList = listService.PatchList(id, model);
+
+            if (todoList == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(todoList);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<TModel> DeleteTModelById(int id)
+        public ActionResult<TodoItem> DeleteTodoListById(int id)
         {
-            return null;
+            var todoList = listService.DeleteList(id);
+
+            if (todoList == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }
