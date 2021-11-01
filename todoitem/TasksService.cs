@@ -4,32 +4,32 @@ using todo_rest_api.Models;
 
 namespace todo_rest_api
 {
-    public class TodoItemService
+    public class TaskService
     {
-        private List<TodoItem> todoItems = new List<TodoItem> {
+        private List<Task> todoItems = new List<Task> {
                 new TodoItem () { Id = 1, Title = "Implement read"},
                 new TodoItem () { Id = 2, Title = "Implement create"}
              };
         private int lastId = 2;
-        public List<TodoItem> GetAll()
+        public List<Task> GetAll()
         {
             return todoItems;
         }
 
-        public TodoItem CreateItem(TodoItem item)
+        public Task CreateItem(Task item, List<Task> todoItems)
         {
             item.Id = ++lastId;
             todoItems.Add(item);
             return item;
         }
-        public TodoItem DeleteItem(int id)
+        public Task DeleteItem(int id, List<Task> todoItems)
         {
             var todoItem = id <= todoItems.Count ? todoItems[--id] : null;
 
             if(todoItem != null)
             {
             todoItems.Remove(todoItem);
-            foreach(TodoItem item in todoItems)
+            foreach(Task item in todoItems)
             {
                 if(item.Id > id)
                 {
@@ -42,13 +42,13 @@ namespace todo_rest_api
             return todoItem;
         }
 
-        public TodoItem GetTodoItemById(int id)
+        public Task GetTodoItemById(int id, List<Task> todoItems)
         {
             var todoItem = id <= todoItems.Count ? todoItems[--id] : null;
             return todoItem;
         }
 
-        public TodoItem PutItem(int id, TodoItem model)
+        public Task PutItem(int id, Task model)
         {
             var todoItem = id <= todoItems.Count ? model : null;
             int index = --id;
@@ -62,7 +62,7 @@ namespace todo_rest_api
            return todoItem;
         }
 
-        public TodoItem PatchItem(int id, TodoItem model)
+        public Task PatchItem(int id, Task model)
         {
             var todoItem = id <= todoItems.Count ? model : null;
             int index = --id;
