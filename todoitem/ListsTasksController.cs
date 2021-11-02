@@ -10,7 +10,7 @@ using todo_rest_api.Models;
 namespace todo_rest_api.Controllers
 {
 
-    [Route("api/lists/{listId}/task")]
+    [Route("api/lists/{listId?}/task")]
     [ApiController]
     public class ListsTasksController : ControllerBase
     {
@@ -26,15 +26,29 @@ namespace todo_rest_api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<TodoItem>> GetTask(int listId)
         {
-            return tasksService.GetAllTaskByTodoListId(listService.GetListByListId(listId));
+            if(listId != 0)
+            {
+                return tasksService.GetAllTaskByTodoListId(listService.GetListByListId(listId));
+            }
+            else
+            {
+                return tasksService.GetAll(listService.GetAll());
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult<TodoItem> GetTaskById(int id, int listId)
         {
-
-            var todoTask = tasksService.GetTaskById(id, listService.GetListByListId(listId));
-
+            var todoTask = new TodoItem();
+            if(listId != 0)
+            {
+                todoTask = tasksService.GetTaskByIdAndListId(id, listService.GetListByListId(listId));
+            }
+            else
+            {
+                todoTask = tasksService.GetTaskById(id, listService.GetAll());
+            }
+            
             if(todoTask == null)
             {
                 return NotFound();
@@ -46,8 +60,15 @@ namespace todo_rest_api.Controllers
         [HttpPost]
         public ActionResult<TodoItem> CreateTask(TodoItem todoTask,  int listId)
         {
-            
-            TodoItem createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
+            var createdTask = new TodoItem();
+            if(listId != 0)
+            {
+                createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
+            }
+            else
+            {
+                createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
+            }
             
             return Created($"api/task/{createdTask.Id}", createdTask);
         }
@@ -56,7 +77,7 @@ namespace todo_rest_api.Controllers
         public IActionResult PutTask(int id, TodoItem model,  int listId)
         {
             
-            var todoTask = tasksService.PutTask(id, model, listService.GetListByListId(listId), listId);
+            var todoTask = tasksService.PutTaskWithListId(id, model, listService.GetListByListId(listId));
 
             if (todoTask == null)
             {
@@ -70,7 +91,7 @@ namespace todo_rest_api.Controllers
         public IActionResult PatchTask (int id, TodoItem model,  int listId)
         {
 
-            var todoTask = tasksService.PatchTask(id, model, listService.GetListByListId(listId));
+            var todoTask = tasksService.PatchTaskWithListId(id, model, listService.GetListByListId(listId));
 
             if (todoTask == null)
             {
@@ -84,7 +105,7 @@ namespace todo_rest_api.Controllers
         public ActionResult<TodoItem> DeleteTaskById(int id, int listId)
         {
 
-            var todoTask = tasksService.DeleteTask(id, listService.GetListByListId(listId));
+            var todoTask = tasksService.DeleteTaskByListId(id, listService.GetListByListId(listId));
 
             if (todoTask == null)
             {
