@@ -4,7 +4,7 @@ namespace todo_rest_api.Models
     public class TodoItem
     {
         public int Id { get; set; }
-        public int ThisListId { get; set; }
+        public int ListId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime? DueDate { get; set; }

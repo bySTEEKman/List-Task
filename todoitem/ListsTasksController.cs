@@ -10,7 +10,7 @@ using todo_rest_api.Models;
 namespace todo_rest_api.Controllers
 {
 
-    [Route("api/lists/{listId?}/task")]
+    [Route("api/lists/{listId?}/tasks")]
     [ApiController]
     public class ListsTasksController : ControllerBase
     {
@@ -26,29 +26,14 @@ namespace todo_rest_api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<TodoItem>> GetTask(int listId)
         {
-            if(listId != 0)
-            {
-                return tasksService.GetAllTaskByTodoListId(listService.GetListByListId(listId));
-            }
-            else
-            {
-                return tasksService.GetAll(listService.GetAll());
-            }
+            return tasksService.GetAllTaskByTodoListId(listService.GetListByListId(listId));
         }
 
         [HttpGet("{id}")]
         public ActionResult<TodoItem> GetTaskById(int id, int listId)
         {
-            var todoTask = new TodoItem();
-            if(listId != 0)
-            {
-                todoTask = tasksService.GetTaskByIdAndListId(id, listService.GetListByListId(listId));
-            }
-            else
-            {
-                todoTask = tasksService.GetTaskById(id, listService.GetAll());
-            }
-            
+            var todoTask = tasksService.GetTaskByIdAndListId(id, listService.GetListByListId(listId));
+
             if(todoTask == null)
             {
                 return NotFound();
@@ -60,15 +45,8 @@ namespace todo_rest_api.Controllers
         [HttpPost]
         public ActionResult<TodoItem> CreateTask(TodoItem todoTask,  int listId)
         {
-            var createdTask = new TodoItem();
-            if(listId != 0)
-            {
-                createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
-            }
-            else
-            {
-                createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
-            }
+            
+            TodoItem createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
             
             return Created($"api/task/{createdTask.Id}", createdTask);
         }

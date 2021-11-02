@@ -29,7 +29,7 @@ namespace todo_rest_api
         {
             ++lastIndex;
             item.Id = lastIndex;
-            item.ThisListId = listId;
+            item.ListId = listId;
             list.TaskList.Add(item);
             return item;
         }
@@ -37,6 +37,7 @@ namespace todo_rest_api
         {
             var todoItem = new TodoItem();
             
+
             foreach(TodoList taskList in list)
             {
                 foreach(TodoItem item in taskList.TaskList)
@@ -44,19 +45,17 @@ namespace todo_rest_api
                     if(item.Id == id)
                     {
                         todoItem = item;
-                        break;
-                    }
-                    else
-                    {
-                        todoItem = null;
                     }
                 }
             }
-
-
-            if(todoItem != null)
+            if(todoItem.ListId != 0)
             {
-                list[todoItem.ThisListId].TaskList.Remove(todoItem);
+                int listIndex = --todoItem.ListId;
+                list[listIndex].TaskList.Remove(todoItem);
+            }
+            else
+            {
+                todoItem = null;
             }
 
             return todoItem;
@@ -83,8 +82,8 @@ namespace todo_rest_api
 
         public TodoItem PatchTaskWithListId(int id, TodoItem model, TodoList todoList)
         {
-            var todoItem = todoList.TaskList[id] != null ? model : null;
             int index = --id;
+            var todoItem = todoList.TaskList[index] != null ? model : null;
 
             if(todoItem != null)
             {
@@ -112,7 +111,8 @@ namespace todo_rest_api
 
         public TodoItem DeleteTaskByListId(int id, TodoList todoList)
         {
-            var todoItem = todoList.TaskList[id] != null ? todoList.TaskList[id] : null;
+            int index = --id;
+            var todoItem = todoList.TaskList[index] != null ? todoList.TaskList[index] : null;
 
             if(todoItem != null)
             {
@@ -124,11 +124,12 @@ namespace todo_rest_api
 
         public TodoItem PutTaskWithListId(int id, TodoItem model, TodoList todoList)
         {
-            var todoItem = todoList.TaskList[id] != null ? model : null;
+            int index = --id;
+            var todoItem = todoList.TaskList[index] != null ? model : null;
 
             if(todoItem != null)
             {
-                todoList.TaskList[id] = todoItem;
+                todoList.TaskList[index] = todoItem;
             }
 
             return todoItem;
@@ -158,6 +159,8 @@ namespace todo_rest_api
         public TodoItem PutTask(int id, TodoItem model, List<TodoList> list)
         {
             var todoItem = new TodoItem();
+            int index = --id;
+
             foreach(TodoList todoList in list)
             {
                 foreach(TodoItem item in todoList.TaskList)
@@ -176,7 +179,8 @@ namespace todo_rest_api
 
             if(todoItem != null)
             {
-                list[todoItem.ThisListId].TaskList[todoItem.Id] = model;
+                int listIndex = --todoItem.ListId;
+                list[listIndex].TaskList[index] = model;
                 todoItem = model;
             }
 
@@ -194,30 +198,31 @@ namespace todo_rest_api
                 {
                     if(item.Id == id && todoItem != null)
                     {
-                        todoItem.ThisListId = item.ThisListId;
+                        todoItem.ListId = item.ListId;
                     }
                 }
             }
             
             if(todoItem != null)
             {
+                int listIndex = --todoItem.ListId;
                 if(todoItem.Title != null)
                 {
-                    list[todoItem.ThisListId].TaskList[index].Title = todoItem.Title;
+                    list[listIndex].TaskList[index].Title = todoItem.Title;
                 }
                 if(todoItem.Description != null)
                 {
-                    list[todoItem.ThisListId].TaskList[index].Description = todoItem.Description;
+                    list[listIndex].TaskList[index].Description = todoItem.Description;
                 }
                 if(todoItem.DueDate != null)
                 {
-                    list[todoItem.ThisListId].TaskList[index].DueDate = todoItem.DueDate;
+                    list[listIndex].TaskList[index].DueDate = todoItem.DueDate;
                 }
                 if(todoItem.Done != null)
                 {
-                    list[todoItem.ThisListId].TaskList[index].Done = todoItem.Done;
+                    list[listIndex].TaskList[index].Done = todoItem.Done;
                 }
-                var patchedTask = list[todoItem.ThisListId].TaskList[index];
+                var patchedTask = list[listIndex].TaskList[index];
                 return patchedTask;
             }
             return todoItem;

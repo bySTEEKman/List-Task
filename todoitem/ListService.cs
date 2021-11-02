@@ -10,6 +10,7 @@ namespace todo_rest_api
             new TodoList () {Id = 1, OwnerName = "Yan", TaskList = new List<TodoItem>()},
             new TodoList () {Id = 2, OwnerName = "Oleh", TaskList = new List<TodoItem>()}
         };
+        int lastIndex = 2;
 
         public TodoList GetListByListId(int listId)
         {
@@ -22,7 +23,8 @@ namespace todo_rest_api
 
         public TodoList CreateList(TodoList item)
         {
-            item.Id = todoLists.Count + 1;
+            ++lastIndex;
+            item.Id = lastIndex;
             todoLists.Add(item);
             return item;
         }
@@ -34,13 +36,6 @@ namespace todo_rest_api
             if(todoList != null)
             {
                 todoLists.Remove(todoList);
-                foreach(TodoList item in todoLists)
-                {
-                    if(item.Id > id)
-                    {
-                        item.Id--;
-                    }
-                }
             }
 
             return todoList;
