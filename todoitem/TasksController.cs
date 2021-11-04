@@ -17,24 +17,22 @@ namespace todo_rest_api.Controllers
     public class TasksController : ControllerBase
     {
         private TodoItemService tasksService;
-        private TodoListService listService;
         
-        public TasksController(TodoItemService service, TodoListService listservice)
+        public TasksController(TodoItemService service)
         {
             this.tasksService = service;
-            this.listService = listservice;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<TodoItem>> GetTask()
         {
-            return tasksService.GetAll(listService.GetAll());
+            return tasksService.GetAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<TodoItem> GetTaskById(int id)
         {
-            var todoTask = tasksService.GetTaskById(id, listService.GetAll());
+            var todoTask = tasksService.GetTaskById(id);
 
             if(todoTask == null)
             {
@@ -45,9 +43,9 @@ namespace todo_rest_api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<TodoItem> CreateTask(TodoItem todoTask, int listId)
+        public ActionResult<TodoItem> CreateTask(TodoItem item, int listId)
         {
-            TodoItem createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
+            var createdTask = tasksService.CreateTask(item, listId);
             
             return Created($"api/task/{createdTask.Id}", createdTask);
         }
@@ -55,7 +53,7 @@ namespace todo_rest_api.Controllers
         [HttpPut("{id}")]
         public IActionResult PutTask(int id, TodoItem model)
         {   
-            var todoTask = tasksService.PutTask(id, model, listService.GetAll());
+            var todoTask = tasksService.PutTask(id, model);
 
             if (todoTask == null)
             {
@@ -68,7 +66,7 @@ namespace todo_rest_api.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchTask (int id, TodoItem model)
         {
-            var todoTask = tasksService.PatchTask(id, model, listService.GetAll());
+            var todoTask = tasksService.PatchTask(id, model);
 
             if (todoTask == null)
             {
@@ -81,7 +79,7 @@ namespace todo_rest_api.Controllers
         [HttpDelete("{id}")]
         public ActionResult<TodoItem> DeleteTaskById(int id)
         {
-            var todoTask = tasksService.DeleteTask(id, listService.GetAll());
+            var todoTask = tasksService.DeleteTask(id);
 
             if (todoTask == null)
             {

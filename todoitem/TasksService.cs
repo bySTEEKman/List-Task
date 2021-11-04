@@ -13,229 +13,155 @@ namespace todo_rest_api
             this._context = context;
         }
 
+        // Work with database
         private void Add(TodoItem item)
         {
             _context.Tasks.Add(item);
             _context.SaveChanges();
         }
 
+        private void AddToList(TodoItem item)
+        {
+            _context.Lists
+            .Where(l => l.Id == item.ListId)
+            .TaskList.Add(item);
+        }
 
+        private void Delete(TodoItem item)
+        {
+            _context.Tasks.Remove(item);
+            _context.SaveChanges();
+        }
+
+        private void DeleteFromList(TodoItem item)
+        {
+            _context.Lists
+            .Where(l => l.Id == item.ListId)
+            .TaskList.Remove(item);
+        }
+
+        private void PutItem(TodoItem item)
+        {
+            _context.Tasks
+            .Where(t => t.Id == item.id)
+            .Select(t => t = item);
+        }
+
+        private void PutItemToList(TodoItem item)
+        {
+            _context.Lists
+            .Where(l => l.Id == item.ListId)
+            .TaskList
+            .Where(t => t.Id == item.Id)
+            .Select(t => t = item);
+        }
+
+        private TodoItem GetItemById(int id)
+        {
+            var todoItem = _context.Tasks
+                .Where(t => t.Id == id)
+                .Single();
+
+            return todoItem;
+        }
+
+        // Work with http request
         public List<TodoItem> GetAll(List<TodoList> list)
         {
-            List<TodoItem> allTasks = new List<TodoItem>();
-            foreach (TodoList taskList in list)
-            {
-                foreach (TodoItem item in taskList.TaskList)
-                {
-                    allTasks.Add(item);
-                }
-            }
+            var allTasks = _context.Tasks
+                .ToList();
+
             return allTasks;
         }
 
-        public List<TodoItem> GetAllTaskByTodoListId(TodoList list)
+        public TodoItem CreateTask(TodoItem item, int listId)
         {
-            return list.TaskList;
-        }
+            var todoList = _context.Lists
+                .Where(l => l.Id == listId)
+                .Single();
 
-        public TodoItem CreateTask(TodoItem item, TodoList list, int listId)
-        {
-            ++lastIndex;
-            item.Id = lastIndex;
-            item.ListId = listId;
-            list.TaskList.Add(item);
+            item.TodoList = todoList;
+
+            Add(item);
+            AddToList(item);
+
             return item;
         }
-        public TodoItem DeleteTask(int id, List<TodoList> list)
+        public TodoItem DeleteTask(int id)
         {
-            var todoItem = new TodoItem();
+            var todoItem = GetItemById(id);
 
-
-            foreach (TodoList taskList in list)
+            if(todoItem != null)
             {
-                foreach (TodoItem item in taskList.TaskList)
-                {
-                    if (item.Id == id)
-                    {
-                        todoItem = item;
-                    }
-                }
-            }
-            if (todoItem.ListId != 0)
-            {
-                int listIndex = --todoItem.ListId;
-                list[listIndex].TaskList.Remove(todoItem);
-            }
-            else
-            {
-                todoItem = null;
+                Delete(todoItem);
+                DeleteFromList(todoItem);
             }
 
             return todoItem;
         }
 
-        internal TodoItem GetTaskByIdAndListId(int id, TodoList todoList)
+        public TodoItem GetTaskById(int id)
         {
-            var todoItem = new TodoItem();
-            foreach (TodoItem item in todoList.TaskList)
+            var todoItem = GetItemById(id);
+
+            return todoItem;
+        }
+
+        public TodoItem PutTask(int id, TodoItem model)
+        {
+            var todoItem = GetItemById(id);
+
+            if(todoItem != null)
             {
-                if (item.Id == id)
-                {
-                    todoItem = item;
-                    return todoItem;
-                }
-                else
-                {
-                    todoItem = null;
-                }
+                var changedItem = model;
+
+                changedItem.Id = todoItem.Id;
+                changedItem.ListId = todoItem.ListId;
+                changedItem.TaskList = todoItem.TaskList;
+
+                PutItem(changedItem);
+                PutItemToList(changedItem);
+
+                return changedItem;
             }
 
             return todoItem;
         }
 
-        public TodoItem PatchTaskWithListId(int id, TodoItem model, TodoList todoList)
+        public TodoItem PatchTask(int id, TodoItem model)
         {
-            int index = --id;
-            var todoItem = todoList.TaskList[index] != null ? model : null;
+            var todoItem = GetItemById(id);
 
             if (todoItem != null)
             {
-                if (todoItem.Title != null)
+                if (model.Title != null)
                 {
-                    todoList.TaskList[index].Title = todoItem.Title;
+                    _context.Tasks
+                    .Where(t => t.Id = id)
+                    .Select(t => t.Title = model.Title);
                 }
-                if (todoItem.Description != null)
+                if (model.Description != null)
                 {
-                    todoList.TaskList[index].Description = todoItem.Description;
+                    _context.Tasks
+                    .Where(t => t.Id = id)
+                    .Select(t => t.Description = model.Description);
                 }
-                if (todoItem.DueDate != null)
+                if (model.DueDate != null)
                 {
-                    todoList.TaskList[index].DueDate = todoItem.DueDate;
+                    _context.Tasks
+                    .Where(t => t.Id = id)
+                    .Select(t => t.DueDate = model.DueDate);
                 }
                 if (todoItem.Done != null)
                 {
-                    todoList.TaskList[index].Done = todoItem.Done;
+                    _context.Tasks
+                    .Where(t => t.Id = id)
+                    .Select(t => t.Done = model.Done);
                 }
-                var patchedTask = todoList.TaskList[index];
-                return patchedTask;
-            };
-            return todoItem;
-        }
 
-        public TodoItem DeleteTaskByListId(int id, TodoList todoList)
-        {
-            int index = --id;
-            var todoItem = todoList.TaskList[index] != null ? todoList.TaskList[index] : null;
+                var patchedTask = GetItemById(id);
+                PutItemToList(patchedTask);
 
-            if (todoItem != null)
-            {
-                todoList.TaskList.Remove(todoItem);
-            }
-
-            return todoItem;
-        }
-
-        public TodoItem PutTaskWithListId(int id, TodoItem model, TodoList todoList)
-        {
-            int index = --id;
-            var todoItem = todoList.TaskList[index] != null ? model : null;
-
-            if (todoItem != null)
-            {
-                todoList.TaskList[index] = todoItem;
-            }
-
-            return todoItem;
-        }
-
-        public TodoItem GetTaskById(int id, List<TodoList> list)
-        {
-            var todoItem = new TodoItem();
-            foreach (TodoList todoList in list)
-            {
-                foreach (TodoItem item in todoList.TaskList)
-                {
-                    if (item.Id == id)
-                    {
-                        todoItem = item;
-                        return todoItem;
-                    }
-                    else
-                    {
-                        todoItem = null;
-                    }
-                }
-            }
-            return todoItem;
-        }
-
-        public TodoItem PutTask(int id, TodoItem model, List<TodoList> list)
-        {
-            var todoItem = new TodoItem();
-            int index = --id;
-
-            foreach (TodoList todoList in list)
-            {
-                foreach (TodoItem item in todoList.TaskList)
-                {
-                    if (item.Id == id)
-                    {
-                        todoItem = item;
-                        break;
-                    }
-                    else
-                    {
-                        todoItem = null;
-                    }
-                }
-            }
-
-            if (todoItem != null)
-            {
-                int listIndex = --todoItem.ListId;
-                list[listIndex].TaskList[index] = model;
-                todoItem = model;
-            }
-
-            return todoItem;
-        }
-
-        public TodoItem PatchTask(int id, TodoItem model, List<TodoList> list)
-        {
-            var todoItem = id <= lastIndex ? model : null;
-            int index = --id;
-
-            foreach (TodoList todoList in list)
-            {
-                foreach (TodoItem item in todoList.TaskList)
-                {
-                    if (item.Id == id && todoItem != null)
-                    {
-                        todoItem.ListId = item.ListId;
-                    }
-                }
-            }
-
-            if (todoItem != null)
-            {
-                int listIndex = --todoItem.ListId;
-                if (todoItem.Title != null)
-                {
-                    list[listIndex].TaskList[index].Title = todoItem.Title;
-                }
-                if (todoItem.Description != null)
-                {
-                    list[listIndex].TaskList[index].Description = todoItem.Description;
-                }
-                if (todoItem.DueDate != null)
-                {
-                    list[listIndex].TaskList[index].DueDate = todoItem.DueDate;
-                }
-                if (todoItem.Done != null)
-                {
-                    list[listIndex].TaskList[index].Done = todoItem.Done;
-                }
-                var patchedTask = list[listIndex].TaskList[index];
                 return patchedTask;
             }
             return todoItem;
