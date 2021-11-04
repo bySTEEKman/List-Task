@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace todo_rest_api
 {
@@ -26,12 +27,17 @@ namespace todo_rest_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<TodoListContext>(options =>
+                options
+                    .UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
+                    .UseSnakeCaseNamingConvention()
+            );
 
             services.AddControllers();
 
-            services.AddSingleton<ListService> ();
+            services.AddScoped<TodoListService>();
 
-            services.AddSingleton<TasksService> ();
+            services.AddScoped<TodoItemService>();
 
             services.AddSwaggerGen(c =>
             {

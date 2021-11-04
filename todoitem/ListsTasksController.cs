@@ -14,10 +14,10 @@ namespace todo_rest_api.Controllers
     [ApiController]
     public class ListsTasksController : ControllerBase
     {
-        private TasksService tasksService;
-        private ListService listService;
+        private TodoItemService tasksService;
+        private TodoListService listService;
 
-        public ListsTasksController(TasksService service, ListService listservice)
+        public ListsTasksController(TodoItemService service, TodoListService listservice)
         {
             this.tasksService = service;
             this.listService = listservice;

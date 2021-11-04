@@ -1,63 +1,74 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using todo_rest_api.Models;
 
 namespace todo_rest_api
 {
-    public class ListService
+    public class TodoListService
     {
-        List<TodoList> todoLists = new List<TodoList>{
-            new TodoList () {Id = 1, OwnerName = "Yan", TaskList = new List<TodoItem>()},
-            new TodoList () {Id = 2, OwnerName = "Oleh", TaskList = new List<TodoItem>()}
-        };
-        int lastIndex = 2;
+        private TodoListContext _context;
 
+        public TodoListService(TodoListContext context)
+        {
+            this._context = context;
+        }
+
+        private void Add(TodoList item)
+        {
+            _context.Lists.Add(item);
+            _context.SaveChanges();
+        }
+
+        
         public TodoList GetListByListId(int listId)
         {
-            return todoLists[--listId];
+            var todoList = _context.Lists
+                .Where(l => l.Id == listId)
+                .Single();
+
+            return todoList;
         }
         public List<TodoList> GetAll()
         {
+            var todoLists = _context.Lists
+                .ToList();
+
             return todoLists;
         }
 
         public TodoList CreateList(TodoList item)
         {
-            ++lastIndex;
-            item.Id = lastIndex;
-            todoLists.Add(item);
-            return item;
+            _context.Lists.Add(item);
+            var todoList = _context.Lists
+                .Where(l => l.OwnerName == item.OwnerName)
+                .Single();
+
+            return todoList;
         }
         public TodoList DeleteList(int id)
         {
-            int index = --id;
-            var todoList = id <= todoLists.Count ? todoLists[index] : null;
+            var todoList = _context.Lists
+                .Where(l => l.Id == id)
+                .Single();
 
-            if(todoList != null)
-            {
-                todoLists.Remove(todoList);
-            }
+            _context.Lists.Remove(todoList);
 
             return todoList;
         }
 
-        public TodoList GetListById(int id)
-        {
-            var todoList = id <= todoLists.Count ? todoLists[--id] : null;
-            return todoList;
-        }
+        // public TodoList GetListById(int id)
+        // {
+        //     var todoList = id <= todoLists.Count ? todoLists[--id] : null;
+        //     return todoList;
+        // }
 
         public TodoList PutList(int id, TodoList model)
         {
-            var todoList = id <= todoLists.Count ? model : null;
-            int index = --id;
-
-            if(todoList != null)
-            {
-                todoList.Id = id;
-                todoLists[index] = todoList;
-            }
-
+            var todoList = _context.Lists
+                .Where(l => l.Id == id)
+                .Single();
+                
            return todoList;
         }
 
