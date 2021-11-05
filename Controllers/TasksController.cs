@@ -43,9 +43,9 @@ namespace todo_rest_api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<TodoItem> CreateTask(TodoItem item, int listId)
+        public ActionResult<TodoItem> CreateTask(TodoItem item)
         {
-            var createdTask = tasksService.CreateTask(item, listId);
+            var createdTask = tasksService.CreateTask(item);
             
             return Created($"api/task/{createdTask.Id}", createdTask);
         }

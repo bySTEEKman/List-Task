@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using todo_rest_api.Models;
+using System.Linq;
 
 namespace todo_rest_api
 {
@@ -13,19 +14,12 @@ namespace todo_rest_api
             this._context = context;
         }
 
-        // Work with database
         private void Add(TodoItem item)
         {
             _context.Tasks.Add(item);
             _context.SaveChanges();
         }
 
-        private void AddToList(TodoItem item)
-        {
-            _context.Lists
-            .Where(l => l.Id == item.ListId)
-            .TaskList.Add(item);
-        }
 
         private void Delete(TodoItem item)
         {
@@ -33,40 +27,27 @@ namespace todo_rest_api
             _context.SaveChanges();
         }
 
-        private void DeleteFromList(TodoItem item)
-        {
-            _context.Lists
-            .Where(l => l.Id == item.ListId)
-            .TaskList.Remove(item);
-        }
-
         private void PutItem(TodoItem item)
         {
-            _context.Tasks
-            .Where(t => t.Id == item.id)
-            .Select(t => t = item);
-        }
+            var todItem = _context.Tasks.Where(t => t.Id == item.Id).Single(); 
 
-        private void PutItemToList(TodoItem item)
-        {
-            _context.Lists
-            .Where(l => l.Id == item.ListId)
-            .TaskList
-            .Where(t => t.Id == item.Id)
-            .Select(t => t = item);
+            _context.Tasks.Remove(todItem);
+            _context.Tasks.Add(item);
+
+            _context.SaveChanges();
         }
 
         private TodoItem GetItemById(int id)
         {
             var todoItem = _context.Tasks
                 .Where(t => t.Id == id)
-                .Single();
-
+                .SingleOrDefault();
+            
             return todoItem;
         }
 
         // Work with http request
-        public List<TodoItem> GetAll(List<TodoList> list)
+        public List<TodoItem> GetAll()
         {
             var allTasks = _context.Tasks
                 .ToList();
@@ -74,16 +55,15 @@ namespace todo_rest_api
             return allTasks;
         }
 
-        public TodoItem CreateTask(TodoItem item, int listId)
+        public TodoItem CreateTask(TodoItem item)
         {
             var todoList = _context.Lists
-                .Where(l => l.Id == listId)
+                .Where(l => l.Id == item.ListId)
                 .Single();
 
             item.TodoList = todoList;
 
             Add(item);
-            AddToList(item);
 
             return item;
         }
@@ -91,10 +71,9 @@ namespace todo_rest_api
         {
             var todoItem = GetItemById(id);
 
-            if(todoItem != null)
+            if (todoItem != null)
             {
                 Delete(todoItem);
-                DeleteFromList(todoItem);
             }
 
             return todoItem;
@@ -111,16 +90,15 @@ namespace todo_rest_api
         {
             var todoItem = GetItemById(id);
 
-            if(todoItem != null)
+            if (todoItem != null)
             {
                 var changedItem = model;
 
                 changedItem.Id = todoItem.Id;
                 changedItem.ListId = todoItem.ListId;
-                changedItem.TaskList = todoItem.TaskList;
+                changedItem.TodoList = todoItem.TodoList;
 
                 PutItem(changedItem);
-                PutItemToList(changedItem);
 
                 return changedItem;
             }
@@ -137,30 +115,41 @@ namespace todo_rest_api
                 if (model.Title != null)
                 {
                     _context.Tasks
-                    .Where(t => t.Id = id)
-                    .Select(t => t.Title = model.Title);
+                    .Where(t => t.Id == id)
+                    .ToList()
+                    .ForEach(t => t.Title = model.Title);
+
+                    _context.SaveChanges();
                 }
                 if (model.Description != null)
                 {
                     _context.Tasks
-                    .Where(t => t.Id = id)
-                    .Select(t => t.Description = model.Description);
+                    .Where(t => t.Id == id)
+                    .ToList()
+                    .ForEach(t => t.Description = model.Description);
+
+                    _context.SaveChanges();
                 }
                 if (model.DueDate != null)
                 {
                     _context.Tasks
-                    .Where(t => t.Id = id)
-                    .Select(t => t.DueDate = model.DueDate);
+                    .Where(t => t.Id == id)
+                    .ToList()
+                    .ForEach(t => t.DueDate = model.DueDate);
+
+                    _context.SaveChanges();
                 }
-                if (todoItem.Done != null)
+                if (todoItem.Done != false)
                 {
                     _context.Tasks
-                    .Where(t => t.Id = id)
-                    .Select(t => t.Done = model.Done);
+                    .Where(t => t.Id == id)
+                    .ToList()
+                    .ForEach(t => t.Done = model.Done);
+
+                    _context.SaveChanges();
                 }
 
                 var patchedTask = GetItemById(id);
-                PutItemToList(patchedTask);
 
                 return patchedTask;
             }

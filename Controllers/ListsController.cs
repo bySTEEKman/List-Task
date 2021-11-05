@@ -26,7 +26,7 @@ namespace todo_rest_api.Controllers
         [HttpGet("{id}")]
         public ActionResult<TodoList> GetTodoListById(int id)
         {
-            var todoList = listService.GetListById(id);
+            var todoList = listService.GetListByListId(id);
 
             if(todoList == null)
             {
@@ -39,7 +39,7 @@ namespace todo_rest_api.Controllers
         [HttpPost]
         public ActionResult<TodoList> PostTodoList(TodoList model)
         {
-            TodoList createdList = listService.CreateList(model);
+            var createdList = listService.CreateList(model);
             
             return Created($"api/lists/{createdList.Id}", createdList);
         }

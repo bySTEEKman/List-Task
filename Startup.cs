@@ -33,11 +33,13 @@ namespace todo_rest_api
                     .UseSnakeCaseNamingConvention()
             );
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddScoped<TodoListService>();
 
             services.AddScoped<TodoItemService>();
+
+            services.AddScoped<DashboardService>();
 
             services.AddSwaggerGen(c =>
             {

@@ -64,4 +64,8 @@
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Microsoft.Extensions.DependencyInjection.dll
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/System.Diagnostics.DiagnosticSource.dll
-C:\Users\user\Desktop\ef_core\List-Task\obj\Debug\net5.0\todo_rest_api.pdb
+C:/Users/user/Desktop/ef_core/List-Task/obj/Debug/net5.0/todo_rest_api.pdb
+/home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Microsoft.AspNetCore.JsonPatch.dll
+/home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+/home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Newtonsoft.Json.dll
+/home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Newtonsoft.Json.Bson.dll

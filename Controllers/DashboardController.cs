@@ -18,9 +18,9 @@ namespace todo_rest_api.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult<IEnumerable<Dashboard>> GetTModels()
+        public ActionResult<Dashboard> GetTModels()
         {
-            return new List<TModel> { };
+            return dashboardService.GetTasksForToday();
         }
     }
 }
