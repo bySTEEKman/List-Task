@@ -68,8 +68,15 @@ namespace todo_rest_api
             var todoList = _context.Lists
                 .Where(l => l.Id == id)
                 .Single();
+
+            model.Id = id;
+
+            _context.Lists.Remove(todoList);
+            _context.Lists.Add(model);
+
+            va
                 
-           return todoList;
+           return newTodoList;
         }
 
         public TodoList PatchList(int id, TodoList model)
