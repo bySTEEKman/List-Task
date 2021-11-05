@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/intern/Desktop/HTTP/List-Task/todo_rest_api.csproj": {}
+    "C:\\Users\\user\\Desktop\\ef_core\\List-Task\\todo_rest_api.csproj": {}
   },
   "projects": {
-    "/home/intern/Desktop/HTTP/List-Task/todo_rest_api.csproj": {
+    "C:\\Users\\user\\Desktop\\ef_core\\List-Task\\todo_rest_api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/intern/Desktop/HTTP/List-Task/todo_rest_api.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Desktop\\ef_core\\List-Task\\todo_rest_api.csproj",
         "projectName": "todo_rest_api",
-        "projectPath": "/home/intern/Desktop/HTTP/List-Task/todo_rest_api.csproj",
-        "packagesPath": "/home/intern/.nuget/packages/",
-        "outputPath": "/home/intern/Desktop/HTTP/List-Task/obj/",
+        "projectPath": "C:\\Users\\user\\Desktop\\ef_core\\List-Task\\todo_rest_api.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\user\\Desktop\\ef_core\\List-Task\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/intern/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
@@ -24,7 +24,6 @@
         },
         "frameworks": {
           "net5.0": {
-            "targetAlias": "net5.0",
             "projectReferences": {}
           }
         },
@@ -36,7 +35,6 @@
       },
       "frameworks": {
         "net5.0": {
-          "targetAlias": "net5.0",
           "dependencies": {
             "EFCore.NamingConventions": {
               "target": "Package",
@@ -57,25 +55,12 @@
               "version": "[5.6.3, )"
             }
           },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.402/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.414\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win7-x86": {
+          "#import": []
         }
       }
     }

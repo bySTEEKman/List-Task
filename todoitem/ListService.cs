@@ -57,16 +57,11 @@ namespace todo_rest_api
             return todoList;
         }
 
-        // public TodoList GetListById(int id)
-        // {
-        //     var todoList = id <= todoLists.Count ? todoLists[--id] : null;
-        //     return todoList;
-        // }
-
         public TodoList PutList(int id, TodoList model)
         {
             var todoList = _context.Lists
                 .Where(l => l.Id == id)
+                .Select(l => l = model)
                 .Single();
 
             model.Id = id;
@@ -81,20 +76,27 @@ namespace todo_rest_api
 
         public TodoList PatchList(int id, TodoList model)
         {
-            var todoList = id <= todoLists.Count ? model : null;
-            int index = --id;
+            var todoList = _context.Lists
+                .Where(l => l.Id == id)
+                .Single();
             
             if(todoList!= null)
             {
-                if(todoList.OwnerName != null)
+                if(model.OwnerName != null)
                 {
-                    todoLists[index].OwnerName = todoList.OwnerName;
+                    _context.Lists
+                    .Where(l => l.Id == id)
+                    .Select(l => l.OwnerName = model.OwnerName);
                 }
-                if(todoList.TaskList != null)
+                if(model.TaskList != null)
                 {
-                    todoLists[index].TaskList = todoList.TaskList;
+                    _context.Lists
+                    .Where(l => l.Id == id)
+                    .Select(l => l.TaskList = model.TaskList);
                 }
-                var patchedList = todoLists[index];
+                var patchedList = _context.Lists
+                    .Where(l => l.Id == id)
+                    .Single();
                 return patchedList;
             }
             return todoList;

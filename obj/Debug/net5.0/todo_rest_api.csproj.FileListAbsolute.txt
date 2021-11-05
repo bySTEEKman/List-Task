@@ -64,3 +64,4 @@
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Microsoft.Extensions.DependencyInjection.dll
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
 /home/intern/Desktop/HTTP/List-Task/bin/Debug/net5.0/System.Diagnostics.DiagnosticSource.dll
+C:\Users\user\Desktop\ef_core\List-Task\obj\Debug\net5.0\todo_rest_api.pdb
