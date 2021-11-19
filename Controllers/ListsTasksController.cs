@@ -1,96 +1,98 @@
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Net;
-// using System.Threading.Tasks;
-// using System.Web;
-// using Microsoft.AspNetCore.Mvc;
-// using todo_rest_api.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNetCore.Mvc;
+using todo_rest_api.Models;
 
-// namespace todo_rest_api.Controllers
-// {
+namespace todo_rest_api.Controllers
+{
 
-//     [Route("api/lists/{listId?}/tasks")]
-//     [ApiController]
-//     public class ListsTasksController : ControllerBase
-//     {
-//         private TodoItemService tasksService;
-//         private TodoListService listService;
+    [Route("api/lists/{listId}/tasks")]
+    [ApiController]
+    public class ListsTasksController : ControllerBase
+    {
+        private TodoItemService tasksService;
 
-//         public ListsTasksController(TodoItemService service, TodoListService listservice)
-//         {
-//             this.tasksService = service;
-//             this.listService = listservice;
-//         }
+        public ListsTasksController(TodoItemService service)
+        {
+            this.tasksService = service;
+        }
 
-//         [HttpGet]
-//         public ActionResult<IEnumerable<TodoItem>> GetTask(int listId)
-//         {
-//             return tasksService.GetAllTaskByTodoListId(listService.GetListByListId(listId));
-//         }
+        [HttpGet]
+        public ActionResult<IEnumerable<TodoItem>> GetTask(int listId, bool all)
+        {
+            return tasksService.GetAllTasksByTodoListId(listId, all);
+        }
 
-//         [HttpGet("{id}")]
-//         public ActionResult<TodoItem> GetTaskById(int id, int listId)
-//         {
-//             var todoTask = tasksService.GetTaskByIdAndListId(id, listService.GetListByListId(listId));
+        [HttpGet("{id}")]
+        public ActionResult<TodoItem> GetTaskById(int id)
+        {
+            var todoTask = tasksService.GetTaskById(id);
 
-//             if(todoTask == null)
-//             {
-//                 return NotFound();
-//             }
+            if(todoTask == null)
+            {
+                return NotFound();
+            }
 
-//             return todoTask;
-//         }
+            return todoTask;
+        }
 
-//         [HttpPost]
-//         public ActionResult<TodoItem> CreateTask(TodoItem todoTask,  int listId)
-//         {
-            
-//             TodoItem createdTask = tasksService.CreateTask(todoTask, listService.GetListByListId(listId), listId);
-            
-//             return Created($"api/task/{createdTask.Id}", createdTask);
-//         }
+        [HttpPost]
+        public ActionResult<TodoItem> CreateTask(TodoItem todoTask, int listId)
+        {
+            todoTask.ListId = listId;
 
-//         [HttpPut("{id}")]
-//         public IActionResult PutTask(int id, TodoItem model,  int listId)
-//         {
-            
-//             var todoTask = tasksService.PutTaskWithListId(id, model, listService.GetListByListId(listId));
+            // if (ModelState.IsValid) 
+            // {
+                TodoItem createdTask = tasksService.CreateTask(todoTask);                
+                return Created($"api/task/{createdTask.Id}", createdTask);
+                // } else 
+            // {
+            //     return new BadRequestObjectResult(ModelState);
+            // }
+        }
 
-//             if (todoTask == null)
-//             {
-//                 return NotFound();
-//             }
+        [HttpPut("{id}")]
+        public IActionResult PutTask(int id, TodoItem model)
+        {
+            var todoTask = tasksService.PutTask(id, model);
 
-//             return Created($"/task/{id}", todoTask);
-//         }
+            if (todoTask == null)
+            {
+                return NotFound();
+            }
 
-//         [HttpPatch("{id}")]
-//         public IActionResult PatchTask (int id, TodoItem model,  int listId)
-//         {
+            return Created($"/task/{id}", todoTask);
+        }
 
-//             var todoTask = tasksService.PatchTaskWithListId(id, model, listService.GetListByListId(listId));
+        [HttpPatch("{id}")]
+        public IActionResult PatchTask (int id, TodoItem model)
+        {
 
-//             if (todoTask == null)
-//             {
-//                 return NotFound();
-//             }
+            var todoTask = tasksService.PatchTask(id, model);
 
-//             return Ok(todoTask);
-//         }
+            if (todoTask == null)
+            {
+                return NotFound();
+            }
 
-//         [HttpDelete("{id}")]
-//         public ActionResult<TodoItem> DeleteTaskById(int id, int listId)
-//         {
+            return Ok(todoTask);
+        }
 
-//             var todoTask = tasksService.DeleteTaskByListId(id, listService.GetListByListId(listId));
+        [HttpDelete("{id}")]
+        public ActionResult<TodoItem> DeleteTaskById(int id, int listId)
+        {
+            var todoTask = tasksService.DeleteTask(id);
 
-//             if (todoTask == null)
-//             {
-//                 return NotFound();
-//             }
+            if (todoTask == null)
+            {
+                return NotFound();
+            }
 
-//             return NoContent();
-//         }
-//     }
-// }
+            return NoContent();
+        }
+    }
+}

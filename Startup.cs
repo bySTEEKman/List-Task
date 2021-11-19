@@ -63,6 +63,12 @@ namespace todo_rest_api
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin => true));
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

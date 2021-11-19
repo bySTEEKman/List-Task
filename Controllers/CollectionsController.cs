@@ -11,16 +11,16 @@ namespace todo_rest_api.Controllers
     [ApiController]
     public class CollectionsController : ControllerBase
     {
-        private CollectionsService collectionsService;
-        public CollectionsController(CollectionsService service)
+        private TodoItemService todoItemService;
+        public CollectionsController(TodoItemService service)
         {
-            this.collectionsService = service;
+            this.todoItemService = service;
         }
 
-        [HttpGet("")]
-        public ActionResult<IEnumerable<TodoItemDTO>> GetTModels()
+        [HttpGet]
+        public ActionResult<IEnumerable<TodoItemDTO>> GetAll()
         {
-            return collectionsService.GetTaskCollectionForToday();
+            return todoItemService.GetTaskCollectionForToday();
         }
     }
 }

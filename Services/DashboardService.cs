@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using todo_rest_api.Models;
+using Npgsql;
 
 namespace todo_rest_api
 {
@@ -14,55 +15,48 @@ namespace todo_rest_api
             this._context = context;
         }
 
-        DateTime today = DateTime.Today;
-
         public Dashboard GetTasksForToday()
         {
+            var connString = "Host=127.0.0.1;Username=todo_app;Password=secret;Database=todolist_http";
+
+            using var conn = new NpgsqlConnection(connString);
+            conn.Open();
+
             Dashboard dashForToday = new Dashboard();
 
-            dashForToday.TasksCountForToday = GetTodayTasksCount();
+            dashForToday.TasksCountForToday = GetTodayTasksCount(conn);
 
-            dashForToday.NotComplitedTasks = GetFalseTaskLists();
+            dashForToday.NotComplitedTasks = GetFalseTaskLists(conn);
 
             return dashForToday;
         }
 
-        private List<TodoListDTO> GetFalseTaskLists()
+        private List<TodoListDTO> GetFalseTaskLists(NpgsqlConnection conn)
         {
-            List<TodoListDTO> falseList = new List<TodoListDTO>();
+            List<TodoListDTO> fullList = new List<TodoListDTO>();
 
-            List<TodoList> fullList = _context.Lists.ToList();
-
-            foreach(TodoList list in fullList)
+            using (var cmd = new NpgsqlCommand("SELECT lists.id, lists.title, COUNT(tasks.list_id) FROM lists LEFT JOIN tasks ON lists.id = tasks.list_id WHERE due_date = CURRENT_DATE AND done = false OR lists.id = tasks.list_id ISNULL GROUP BY (lists.id)", conn))
             {
-                TodoListDTO dto = new TodoListDTO();
-
-                dto.Id = list.Id;
-                dto.Title= list.Title;
-                dto.NotComplitedTasksCount = GetTodayTasksCountForList(list);
-
-                falseList.Add(dto);
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                    {
+                        TodoListDTO listInfo = new TodoListDTO();
+                        listInfo.Id = reader.GetInt32(0);
+                        listInfo.Title = reader.GetString(1);
+                        listInfo.NotComplitedTasksCount = reader.GetInt32(2);
+                        fullList.Add(listInfo);
+                    }
             }
 
-            return falseList;
+            return fullList;
         }
-
-        private int GetTodayTasksCountForList(TodoList list)
-        {
-            var taskCount = _context.Tasks
-                .Where(t => t.ListId == list.Id && !t.Done)
-                .ToList()
-                .Count;
-
-            return taskCount;
-        }
-        private int GetTodayTasksCount()
+        private int GetTodayTasksCount(NpgsqlConnection conn)
         {
             int tasksCount = _context.Tasks
-                .Where(t => t.DueDate == today)
+                .Where(t => t.DueDate == DateTime.Today)
                 .ToList()
                 .Count;
-            
+
             return tasksCount;
         }
     }
