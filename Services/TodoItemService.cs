@@ -139,7 +139,7 @@ namespace todo_rest_api
         public List<TodoItemDTO> GetTaskCollectionForToday()
         {
             var todayTasks = _context.Tasks
-                .Where(t => t.DueDate == DateTime.Today)
+                .Where(t => (t.DueDate <= DateTime.Today) || (t.DueDate == null))
                 .Include(t => t.TodoList)
                 .Select(t => new TodoItemDTO(t))
                 .ToList();

@@ -7,6 +7,6 @@ namespace todo_rest_api.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int NotComplitedTasksCount { get; set; }
+        public int NotCompletedTasksCount { get; set; }
     }
 }
